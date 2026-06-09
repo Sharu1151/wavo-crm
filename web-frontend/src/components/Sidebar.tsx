@@ -8,7 +8,9 @@ import {
   MessageSquare, 
   BrainCircuit, 
   LogOut,
-  Sparkles
+  Sparkles,
+  FileText,
+  Settings
 } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -26,6 +28,10 @@ export const Sidebar: React.FC = () => {
     { to: '/customers', label: 'Customers', icon: <Users size={18} /> },
     { to: '/leads', label: 'Leads (Kanban)', icon: <LayoutGrid size={18} /> },
     { to: '/tasks', label: 'Follow-Ups', icon: <CheckSquare size={18} /> },
+    { to: '/invoices', label: 'Invoices', icon: <FileText size={18} /> },
+    { to: '/whatsapp', label: 'WA Helper', icon: <MessageSquare size={18} /> },
+    { to: '/ai', label: 'AI Insights', icon: <BrainCircuit size={18} /> },
+    { to: '/settings', label: 'Settings', icon: <Settings size={18} /> },
   ];
 
   return (
@@ -88,18 +94,6 @@ export const Sidebar: React.FC = () => {
             {link.label}
           </NavLink>
         ))}
-
-        {/* Disabled mock premium items */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)', padding: '0.75rem 1rem', fontSize: '0.9rem', cursor: 'not-allowed' }}>
-          <MessageSquare size={18} />
-          <span>WA Helper</span>
-          <span className="badge" style={{ fontSize: '0.55rem', padding: '0.1rem 0.3rem', background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}>Pro</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)', padding: '0.75rem 1rem', fontSize: '0.9rem', cursor: 'not-allowed' }}>
-          <BrainCircuit size={18} />
-          <span>AI Insights</span>
-          <span className="badge" style={{ fontSize: '0.55rem', padding: '0.1rem 0.3rem', background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}>Biz</span>
-        </div>
       </nav>
 
       {/* Logout Footer */}

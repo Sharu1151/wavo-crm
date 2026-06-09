@@ -6,6 +6,10 @@ import { Dashboard } from './pages/Dashboard';
 import { Customers } from './pages/Customers';
 import { KanbanLeads } from './pages/KanbanLeads';
 import { TasksPage } from './pages/TasksPage';
+import { InvoicesPage } from './pages/InvoicesPage';
+import { WhatsAppPage } from './pages/WhatsAppPage';
+import { AIPage } from './pages/AIPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 // Auth Guard Wrapper
 const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -31,6 +35,10 @@ const AppLayout: React.FC = () => {
           <Route path="customers" element={<Customers />} />
           <Route path="leads" element={<KanbanLeads />} />
           <Route path="tasks" element={<TasksPage />} />
+          <Route path="invoices" element={<InvoicesPage />} />
+          <Route path="whatsapp" element={<WhatsAppPage />} />
+          <Route path="ai" element={<AIPage />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Routes>
       </main>

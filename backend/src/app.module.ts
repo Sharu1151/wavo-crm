@@ -7,6 +7,11 @@ import { LeadsModule } from './modules/leads/leads.module';
 import { FollowupsModule } from './modules/followups/followups.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { InvoicesModule } from './modules/invoices/invoices.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { WhatsappModule } from './modules/whatsapp/whatsapp.module';
+import { AiModule } from './modules/ai/ai.module';
+import { BillingModule } from './modules/billing/billing.module';
 
 @Module({
   imports: [
@@ -22,6 +27,11 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     LeadsModule,
     FollowupsModule,
     TasksModule,
+    InvoicesModule,
+    PaymentsModule,
+    WhatsappModule,
+    AiModule,
+    BillingModule,
   ],
 })
 export class AppModule {}

@@ -88,6 +88,87 @@ export interface Task {
   dueDate?: string;
 }
 
+export interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  amount: number;
+  tax: number;
+  dueDate: string;
+  status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+  customerId: string;
+  customer?: {
+    fullName: string;
+    email: string | null;
+  };
+  createdAt: string;
+  payments?: Payment[];
+}
+
+export interface Payment {
+  id: string;
+  invoiceId: string;
+  amount: number;
+  paymentMethod: string;
+  transactionReference?: string;
+  status: 'PENDING' | 'SUCCESSFUL' | 'FAILED' | 'REFUNDED';
+  receivedAt?: string;
+  createdAt: string;
+  invoice?: {
+    invoiceNumber: string;
+    amount: number;
+  };
+}
+
+export interface WhatsappTemplate {
+  id: string;
+  name: string;
+  category: 'WELCOME' | 'FOLLOW_UP' | 'PAYMENT_REMINDER' | 'APPOINTMENT_REMINDER' | 'PROMOTIONS';
+  bodyText: string;
+  languageCode: string;
+  metaStatus: string;
+  createdAt: string;
+}
+
+export interface WhatsappCampaign {
+  id: string;
+  templateId?: string;
+  name: string;
+  status: 'DRAFT' | 'SCHEDULED' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  scheduledAt?: string;
+  recipientCount: number;
+  createdAt: string;
+  template?: {
+    name: string;
+    category: string;
+  };
+}
+
+export interface BillingLimits {
+  plan: 'FREE' | 'PRO' | 'BUSINESS' | 'ENTERPRISE';
+  status: string;
+  billingCycleEnd?: string;
+  maxCustomers: number;
+  maxUsers: number;
+  name: string;
+}
+
+export interface AIScoreResponse {
+  leadId: string;
+  score: number;
+}
+
+export interface AIOutreachResponse {
+  content: string;
+}
+
+export interface AISuggestionsResponse {
+  suggestions: string[];
+}
+
+export interface AISummaryResponse {
+  summary: string;
+}
+
 export const api = {
   // Authentication
   async login(email: string, password_hash: string): Promise<LoginResponse> {
@@ -112,7 +193,8 @@ export const api = {
 
   // Customers
   async getCustomers(): Promise<Customer[]> {
-    return request<Customer[]>('/customers');
+    const res = await request<{ data: Customer[] }>('/customers');
+    return res.data;
   },
 
   async createCustomer(dto: { fullName: string; mobileNumber: string; email?: string; company?: string; notes?: string }): Promise<Customer> {
@@ -151,5 +233,89 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(dto),
     });
+  },
+
+  // Invoices & Payments Ledger
+  async getInvoices(): Promise<Invoice[]> {
+    return request<Invoice[]>('/invoices');
+  },
+
+  async createInvoice(dto: { customerId: string; invoiceNumber: string; amount: number; tax?: number; dueDate: string }): Promise<Invoice> {
+    return request<Invoice>('/invoices', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    });
+  },
+
+  async updateInvoiceStatus(id: string, status: string): Promise<Invoice> {
+    return request<Invoice>(`/invoices/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  },
+
+  async getRevenueStats(): Promise<{ paid: number; pending: number; overdue: number }> {
+    return request<{ paid: number; pending: number; overdue: number }>('/invoices/stats');
+  },
+
+  async getPayments(): Promise<Payment[]> {
+    return request<Payment[]>('/payments');
+  },
+
+  async recordPayment(dto: { invoiceId: string; amount: number; paymentMethod: string; transactionReference?: string }): Promise<Payment> {
+    return request<Payment>('/payments', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    });
+  },
+
+  // WhatsApp
+  async getTemplates(): Promise<WhatsappTemplate[]> {
+    return request<WhatsappTemplate[]>('/whatsapp/templates');
+  },
+
+  async createTemplate(dto: { name: string; category: string; bodyText: string; languageCode?: string }): Promise<WhatsappTemplate> {
+    return request<WhatsappTemplate>('/whatsapp/templates', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    });
+  },
+
+  async getCampaigns(): Promise<WhatsappCampaign[]> {
+    return request<WhatsappCampaign[]>('/whatsapp/campaigns');
+  },
+
+  async createCampaign(dto: { name: string; templateId: string; recipientCount: number; scheduledAt?: string }): Promise<WhatsappCampaign> {
+    return request<WhatsappCampaign>('/whatsapp/campaigns', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    });
+  },
+
+  // AI Cognitive Extensions
+  async scoreLead(leadId: string): Promise<AIScoreResponse> {
+    return request<AIScoreResponse>(`/ai/score-lead/${leadId}`, {
+      method: 'POST',
+    });
+  },
+
+  async generateOutreach(dto: { customerName: string; businessName: string; details: string; tone: string }): Promise<AIOutreachResponse> {
+    return request<AIOutreachResponse>('/ai/generate-outreach', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    });
+  },
+
+  async suggestReplies(message: string): Promise<AISuggestionsResponse> {
+    return request<AISuggestionsResponse>(`/ai/reply-suggestions?message=${encodeURIComponent(message)}`);
+  },
+
+  async summarizeTimeline(customerId: string): Promise<AISummaryResponse> {
+    return request<AISummaryResponse>(`/ai/summarize-timeline/${customerId}`);
+  },
+
+  // Billing Limits
+  async getBillingLimits(): Promise<BillingLimits> {
+    return request<BillingLimits>('/billing/limits');
   }
 };
