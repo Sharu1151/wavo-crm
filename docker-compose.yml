@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Relational database container
+  postgres:
+    image: postgres:14-alpine
+    container_name: wavo_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: wavo_admin
+      POSTGRES_PASSWORD: wavo_password_local_2026
+      POSTGRES_DB: wavo_crm_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - wavo_network
+
+  # 2. Redis Cache and Message Broker
+  redis:
+    image: redis:6-alpine
+    container_name: wavo_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - wavo_network
+
+  # 3. NestJS Web API gateway (local mounting container)
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wavo_api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgresql://wavo_admin:wavo_password_local_2026@postgres:5432/wavo_crm_db?schema=public
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=wavo_secret_anchor_2026
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - wavo_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  wavo_network:
+    driver: bridge
