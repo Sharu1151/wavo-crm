@@ -38,7 +38,26 @@ async function bootstrap() {
 
   // 2. CORS Policies configuration
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, etc.)
+      if (!origin) {
+        return callback(null, true);
+      }
+      
+      const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
+      
+      // Allow localhost, 127.0.0.1, Vercel subdomains, configured ALLOWED_ORIGINS, and local network IPs
+      const isLocalHost = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+      const isVercel = origin.includes('.vercel.app');
+      const isConfigured = allowedOrigins.includes(origin);
+      const isLocalIP = /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):\d+$/.test(origin);
+
+      if (isLocalHost || isVercel || isConfigured || isLocalIP) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS policy blocked request from origin: ${origin}`));
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

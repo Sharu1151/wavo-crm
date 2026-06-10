@@ -1,4 +1,11 @@
-const BASE_URL = 'http://localhost:3000/api/v1';
+const getBaseUrl = () => {
+  const hostname = window.location.hostname;
+  if (hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.endsWith('.vercel.app')) {
+    return `http://${hostname}:3000/api/v1`;
+  }
+  return 'http://localhost:3000/api/v1';
+};
+const BASE_URL = getBaseUrl();
 
 function getHeaders() {
   const token = localStorage.getItem('wavo_access_token');
