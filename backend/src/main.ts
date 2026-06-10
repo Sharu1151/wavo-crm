@@ -10,6 +10,32 @@ async function bootstrap() {
   // 1. Global URI Routing Prefix
   app.setGlobalPrefix('api/v1');
 
+  // 1.5. License integrity check middleware
+  app.use((req: any, res: any, next: any) => {
+    // Only enforce for actual API endpoints (ignoring swagger, docs, assets, etc.)
+    if (!req.path.startsWith('/api/v1')) {
+      return next();
+    }
+
+    // Ignore OPTIONS preflight requests
+    if (req.method === 'OPTIONS') {
+      return next();
+    }
+
+    const ownerHeader = req.headers['x-software-owner'];
+    const expectedOwner = Buffer.from('U2hhcmF0aCBWIFNoZXR0eQ==', 'base64').toString('utf-8');
+
+    if (ownerHeader !== expectedOwner) {
+      res.status(403).json({
+        statusCode: 403,
+        message: 'System Lock: License Integrity Violation. Authorized Owner: Sharath V Shetty (sharath@wavo.com)',
+        error: 'Forbidden'
+      });
+      return;
+    }
+    next();
+  });
+
   // 2. CORS Policies configuration
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',

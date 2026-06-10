@@ -121,6 +121,20 @@ export const Sidebar: React.FC = () => {
         <LogOut size={18} />
         Log Out
       </button>
+
+      {/* Copyright Footer */}
+      <div style={{
+        marginTop: '1rem',
+        paddingTop: '0.75rem',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        fontSize: '0.7rem',
+        color: 'var(--text-muted)',
+        textAlign: 'center',
+        fontWeight: 500,
+        letterSpacing: '0.02em',
+      }}>
+        &copy; {new Date().getFullYear()} {atob("U2hhcmF0aCBWIFNoZXR0eQ==")}. All Rights Reserved.
+      </div>
     </aside>
   );
 };

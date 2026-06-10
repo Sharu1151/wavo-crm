@@ -2,6 +2,7 @@
   "name": "wavo-crm-backend",
   "version": "1.0.0",
   "description": "Production-ready backend API gateway for Wavo CRM",
+  "author": "Sharath V Shetty",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

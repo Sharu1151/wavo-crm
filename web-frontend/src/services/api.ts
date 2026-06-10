@@ -4,6 +4,7 @@ function getHeaders() {
   const token = localStorage.getItem('wavo_access_token');
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'X-Software-Owner': atob('U2hhcmF0aCBWIFNoZXR0eQ=='), // Obfuscated "Sharath V Shetty"
   };
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
